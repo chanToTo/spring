@@ -11,7 +11,7 @@
 
 2.spring模块
 
-![image](assets/spring模块.jpg)
+![image](../assets/spring模块.jpg)
 
 3.IOC和DI
 
