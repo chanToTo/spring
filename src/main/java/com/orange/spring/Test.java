@@ -11,7 +11,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 public class Test {
 
     public static void main(String[] args) {
-        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("spring/applicationContext.xml");
+        ApplicationContext applicationContext = new ClassPathXmlApplicationContext("spring/applicationContext.xml");
 //        Person person = (Person) applicationContext.getBean("person");
         Person person = applicationContext.getBean(Person.class);
         System.out.println(person.getId());

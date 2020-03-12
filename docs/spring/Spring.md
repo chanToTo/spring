@@ -33,3 +33,53 @@ DI(Dependency Injection)依赖注入：
     
     ① BeanFactory：IOC的基本是实现，是spring内部的基础设施，是面向spring本身的，不是提供给开发人员使用的
     ② ApplicationContext：BeanFatory的子接口，提供更多高级特性，面向spring的使用者，几乎所有场合都使用ApplicationContext而不是底层的BeanFactory
+    
+### 二、spring bean
+
+1.作用域
+
+|  作用域  |  描述  |
+|----|----|
+| singleton | 在spring IoC容器仅存在一个Bean实例，Bean以单例方式存在，bean作用域范围的默认值（单例） |
+| prototype | 每次从容器中调用Bean时，都返回一个新的实例，即每次调用getBean()时，相当于执行newXxxBean() |
+| request | 每次HTTP请求都会创建一个新的Bean，该作用域仅适用于web的Spring WebApplicationContext环境,如果开发者使用了Spring Web MVC框架的话，每一个请求都会通过Spring的DispatcherServlet来处理 |
+| session | 同一个HTTP Session共享一个Bean，不同Session使用不同的Bean。该作用域仅适用于web的Spring WebApplicationContext环境 |
+| application | 限定一个Bean的作用域为ServletContext的生命周期。该作用域仅适用于web的Spring WebApplicationContext环境 |
+
+> - singleton：如果bean的作用域的属性被声明为singleton，那么Spring Ioc容器只会创建一个共享的bean实例。对于所有的bean请求，只要id与该bean定义的相匹配，那么Spring在每次需要时都返回同一个bean实例<bean ...scope="singleton">
+> - prototype：当一个bean的作用域为prototype，表示一个bean定义对应多个对象实例。声明为prototype作用域的bean会导致在每次对该bean请求（将其注入到另一个bean中，或者以程序的方式调用容器的getBean()方法）时都会创建一个新的bean实例。prototype是原型类型，它在我们创建容器的时候并没有实例化，而是当我们获取bean的时候才会去创建一个对象，而且我们每次获取到的对象都不是同一个对象。根据经验，对有状态的bean应该使用prototype作用域，而对无状态的bean则应该使用singleton作用域
+> - request：当http请求调用作用域为request的bean的时候，每增加一个HTTP请求，Spring就会创建一个新的bean，在请求处理完成之后便及时销毁这个bean。开发者可以随意改变实例的状态，因为通过loginAction请求来创建的其他实例根本看不到开发者改变的实例状态，所有创建的Bean实例都是根据独立的请求来的
+> - session：Session中所有http请求共享同一个请求的bean实例。Session结束后就销毁bean
+> - application：application作用域是每个ServletContext中包含一个，而不是每个SpringApplicationContext之中包含一个（某些应用中可能包含不止一个ApplicationContext），application作用域仅仅作为ServletContext的属性可见，单例Bean是ApplicationContext可见
+
+> request,session和application这三个作用域都是基于web的Spring WebApplicationContext实现的，只有在web环境下（比如XmlWebApplicationContext）中才能使用 (ApplicationContext applicationContext1 = new XmlWebApplicationContext();)
+
+2.生命周期
+
+参考：https://www.jianshu.com/p/1dec08d290c1
+    https://www.cnblogs.com/zrtqsk/p/3735273.html
+
+> - 实例化 Instantiation
+> - 属性赋值 Populate
+> - 初始化 Initialization
+> - 销毁 Destruction
+
+> 实例化 -> 属性赋值 -> 初始化 -> 销毁
+
+![image](../assets/bean生命周期.jpg)
+
+### 三、BeanFactory和ApplicationContext的区别
+
+> BeanFactory和ApplicationContext是Spring的两大核心接口，都可以当做Spring的容器。其中ApplicationContext是BeanFactory的子接口
+
+BeanFactory：
+> BeanFactory是Spring容器的基础接口，提供了基础的容器访问能力,提供懒加载方式，只有通过getBean方法调用获取Bean才会进行实例化,常用的是加载XMLBeanFactory
+
+ApplicationContext：
+> ApplicationContext继承自BeanFactory接口，ApplicationContext包含了BeanFactory中所有的功能，在容器启动时，一次性创建了所有的Bean，具有自己独特的特性：
+> - 继承MessageSource，因此支持国际化
+> - 统一的资源文件访问方式
+> - 提供在监听器中注册bean的事件
+> - 同时加载多个配置文件
+> - 载入多个（有继承关系）上下文 ，使得每一个上下文都专注于一个特定的层次，比如应用的web层
+>
